@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Asistente de Recordatorios</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            background: #0b1220;
+            color: #e5e7eb;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #0f172a;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,.4);
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            font-size: 16px;
+            background: #2563eb;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .mensaje {
+            margin-top: 15px;
+            color: #22c55e;
+        }
+
+        .lista {
+            margin-top: 30px;
+        }
+
+        .item {
+            background: #020617;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .vencido {
+            color: #f87171;
+        }
+
+        .completado {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+
+        .fecha {
+            font-size: 12px;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <h1>Asistente de Recordatorios</h1>
+
+    <input id="texto" placeholder='Ej: "Recuérdame entregar la tarea mañana a las 7pm"' />
+    <button onclick="enviar()">Enviar</button>
+
+    <div id="mensaje" class="mensaje"></div>
+
+    <div class="lista">
+        <h2>Pendientes</h2>
+        <div id="lista"></div>
+    </div>
+</div>
+
+<script>
+    async function cargarRecordatorios() {
+        try {
+            const res = await fetch("/recordatorios/pendientes");
+            const data = await res.json();
+
+            const tareas = data.tareas || [];
+            const contenedor = document.getElementById("lista");
+            contenedor.innerHTML = "";
+
+            if (tareas.length === 0) {
+                contenedor.innerHTML = "<p>No hay recordatorios.</p>";
+                return;
+            }
+
+            tareas.forEach(t => {
+                const div = document.createElement("div");
+                div.className = "item";
+
+                let clases = "";
+                if (t.completado) clases = "completado";
+                if (t.vencido) clases = "vencido";
+
+                div.innerHTML = `
+                    <div class="${clases}">
+                        <div>${t.tarea}</div>
+                        ${t.fecha_objetivo ? `<div class="fecha">⏰ ${t.fecha_objetivo}</div>` : ""}
+                    </div>
+                `;
+
+                contenedor.appendChild(div);
+            });
+        } catch (e) {
+            document.getElementById("lista").innerHTML =
+                "<p>Error cargando recordatorios.</p>";
+        }
+    }
+
+    async function enviar() {
+        const texto = document.getElementById("texto").value;
+        if (!texto) return;
+
+        const res = await fetch("/asistente", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({mensaje: texto})
+        });
+
+        const data = await res.json();
+
+        document.getElementById("mensaje").innerText =
+            data.mensaje || "Listo.";
+
+        document.getElementById("texto").value = "";
+
+        // 🔥 SIEMPRE recargar lista, pase lo que pase
+        cargarRecordatorios();
+    }
+
+    // 🔥 CARGA INICIAL (idiot-proof)
+    cargarRecordatorios();
+</script>
+</body>
+</html>

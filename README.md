@@ -1,50 +1,5 @@
-\# Asistente de Recordatorios con FastAPI
+Esta es la version mejorada del agente. AHORA SI ES UN AGENTE. Lo hicimos con mucho amor y esfuerzo profe. Espero que le agrade. Un abrazo y felices vacaciones.
 
-
-
-\## Descripción
-
-Este proyecto implementa un asistente básico tipo agente que interpreta instrucciones en lenguaje natural para guardar y consultar recordatorios.  
-
-Utiliza una API REST desarrollada con FastAPI y una base de datos SQLite para persistencia.
-
-
-
-El sistema simula el comportamiento de un asistente personal sencillo, enfocado en la gestión de tareas académicas.
-
-
-
----
-
-
-
-\## Tecnologías usadas
-
-\- Python 3.10
-
-\- FastAPI
-
-\- Uvicorn
-
-\- SQLite
-
-\- Requests / curl (para pruebas)
-
-
-
----
-
-
-
-\## Cómo ejecutar el proyecto
-
-
-
-\### 1. Activar entorno virtual
-
-```bash
-
-venv\\Scripts\\activate
 
 
 
